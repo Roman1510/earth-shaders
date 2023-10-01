@@ -65,7 +65,7 @@ function animate() {
 }
 animate();
 
-gsap.to(camera.position,{z:15, duration:1})
+
 
 const mouse = {
   x:0,
@@ -103,6 +103,8 @@ function onCanvasClick(event) {
       // Example: Change the color of the clicked mesh
     console.log(clickedMesh, 'clickedMesh')
     console.log(mouse, 'mouse')
+
+    gsap.to(camera.position,{z:15, duration:1})
   }
 }
 
