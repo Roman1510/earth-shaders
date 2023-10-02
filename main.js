@@ -77,7 +77,7 @@ addEventListener('mousemove',(event)=>{
   gsap.to(group.rotation,{y:mouse.x*0.6, x:-mouse.y*0.5, duration: 1})
 })
 
-
+let isResized = false
 function onCanvasClick(event) {
   // Calculate the mouse position in normalized device coordinates
   const mouse = new THREE.Vector2();
@@ -104,7 +104,13 @@ function onCanvasClick(event) {
     console.log(clickedMesh, 'clickedMesh')
     console.log(mouse, 'mouse')
 
-    gsap.to(camera.position,{z:15, duration:1})
+    if(isResized===false){
+      gsap.to(camera.position,{z:15, duration:1})
+    } else {
+      gsap.to(camera.position,{z:100, duration:1})
+    }
+    isResized = !isResized
+    
   }
 }
 
