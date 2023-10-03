@@ -115,4 +115,4 @@ function onCanvasClick(event) {
 }
 
 // Assuming 'renderer' is your Three.js renderer
-renderer.domElement.addEventListener('click', onCanvasClick);
+renderer.domElement.addEventListener('click', onCanvasClick); 
