@@ -77,6 +77,17 @@ addEventListener('mousemove',(event)=>{
   gsap.to(group.rotation,{y:mouse.x*0.6, x:-mouse.y*0.5, duration: 1})
 })
 
+
+window.addEventListener('resize', function()
+
+{
+var width = window.innerWidth;
+var height = window.innerHeight;
+renderer.setSize( width, height );
+camera.aspect = width / height;
+camera.updateProjectionMatrix();
+} );
+
 let isResized = false
 function onCanvasClick(event) {
   // Calculate the mouse position in normalized device coordinates
