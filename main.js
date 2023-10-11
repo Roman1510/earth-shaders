@@ -56,8 +56,6 @@ const materialMoon = new THREE.ShaderMaterial({
 });
 const moon = new THREE.Mesh(geometryMoon, materialMoon);
 
-
-
 //atmo moon
 const atmoGeometryMoon = new THREE.SphereGeometry(0.3, 30, 30)
 const atmoMaterialMoon = new THREE.ShaderMaterial({
