@@ -1,12 +1,9 @@
 import * as THREE from 'three';
 import { gsap } from 'gsap';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import vertexShader from './shaders/vertex.glsl'
-import fragmentShader from './shaders/fragment.glsl'
-import atmoVertex from './shaders/atmoVertex.glsl'
-import atmoFragment from './shaders/atmoFragment.glsl'
-
-
+import vertexShaderEarth from './shaders/earthShaders/vertex.glsl'
+import fragmentShaderEarth from './shaders/earthShaders/fragment.glsl'
+import atmoVertexEarth from './shaders/earthShaders/atmoVertex.glsl'
+import atmoFragmentEarth from './shaders/earthShaders/atmoFragment.glsl'
 
 const size = {
   width: innerWidth,
@@ -25,8 +22,8 @@ document.body.appendChild(renderer.domElement);
 
 const geometryEarth = new THREE.SphereGeometry(5, 50, 50);
 const materialEarth = new THREE.ShaderMaterial({
-  vertexShader,
-  fragmentShader,
+  vertexShader: vertexShaderEarth,
+  fragmentShader: fragmentShaderEarth,
   uniforms: {
     globeTexture: {
       value: new THREE.TextureLoader().load('./image/earth.jpg')
@@ -37,20 +34,20 @@ const earth = new THREE.Mesh(geometryEarth, materialEarth);
 
 const atmoGeometry = new THREE.SphereGeometry(5, 50, 50)
 const atmoMaterial = new THREE.ShaderMaterial({
-  vertexShader: atmoVertex,
-  fragmentShader: atmoFragment,
+  vertexShader: atmoVertexEarth,
+  fragmentShader: atmoFragmentEarth,
   blending: THREE.AdditiveBlending,
   side: THREE.BackSide
 })
 const atmosphereEarth = new THREE.Mesh(atmoGeometry, atmoMaterial)
-atmosphereEarth.scale.set(1.1, 1.1, 1.1)
+atmosphereEarth.scale.set(1.08, 1.08, 1.08)
 scene.add(atmosphereEarth)
 
 //moon
 const geometryMoon = new THREE.SphereGeometry(0.3, 30, 30);
 const materialMoon = new THREE.ShaderMaterial({
-  vertexShader,
-  fragmentShader,
+  vertexShader: vertexShaderEarth,
+  fragmentShader: fragmentShaderEarth,
   uniforms: {
     globeTexture: {
       value: new THREE.TextureLoader().load('./image/moon.jpg')
@@ -59,17 +56,29 @@ const materialMoon = new THREE.ShaderMaterial({
 });
 const moon = new THREE.Mesh(geometryMoon, materialMoon);
 
-moon.position.x = 10
 
 
+//atmo moon
+const atmoGeometryMoon = new THREE.SphereGeometry(0.3, 30, 30)
+const atmoMaterialMoon = new THREE.ShaderMaterial({
+  vertexShader: atmoVertexEarth,
+  fragmentShader: atmoFragmentEarth,
+  blending: THREE.AdditiveBlending,
+  side: THREE.BackSide
+})
+const atmosphereMoon = new THREE.Mesh(atmoGeometryMoon, atmoMaterialMoon)
+atmosphereMoon.scale.set(1.2, 1.2, 1.2)
+scene.add(atmosphereMoon)
 
-atmosphereEarth.scale.set(1.1, 1.1, 1.1)
-scene.add(atmosphereEarth)
-
+//atmo moon
 
 const group = new THREE.Group()
+const moonGroup = new THREE.Group()
+moonGroup.position.x = 10
+moonGroup.add(moon)
+moonGroup.add(atmosphereMoon)
 group.add(earth)
-group.add(moon)
+group.add(moonGroup)
 scene.add(group)
 camera.position.z = 100;
 
@@ -91,8 +100,8 @@ function animate() {
   // moonPosition.y = Math.cos(moonOrbitSpeed * Date.now() * 0.1) * moonOrbitRadius/2;
   moonPosition.x = Math.cos(moonOrbitSpeed * elapsedTime) * moonOrbitRadius;
   moonPosition.z = Math.sin(moonOrbitSpeed * elapsedTime) * moonOrbitRadius;
-  moon.position.copy(moonPosition);
-  moon.rotation.y += 0.1;
+  moonGroup.position.copy(moonPosition);
+  moonGroup.rotation.y += 0.1;
   // moon.lookAt(earth.position);
 }
 animate();
