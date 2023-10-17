@@ -139,8 +139,9 @@ function onCanvasClick(event) {
   raycaster.setFromCamera(mouse, camera);
 
   // Perform the intersection check and populate the 'intersects' array
-  raycaster.intersectObject(earth, true, intersects);
+  raycaster.intersectObject(group, true, intersects);
 
+  console.log(intersects, ' intersects')
   // If there are intersections
   if (intersects.length > 0) {
 
