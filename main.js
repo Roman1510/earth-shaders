@@ -4,6 +4,7 @@ import vertexShaderEarth from './shaders/earthShaders/vertex.glsl'
 import fragmentShaderEarth from './shaders/earthShaders/fragment.glsl'
 import atmoVertexEarth from './shaders/earthShaders/atmoVertex.glsl'
 import atmoFragmentEarth from './shaders/earthShaders/atmoFragment.glsl'
+import stars from './helpers/useStars';
 
 const size = {
   width: innerWidth,
@@ -56,6 +57,8 @@ const materialMoon = new THREE.ShaderMaterial({
 });
 const moon = new THREE.Mesh(geometryMoon, materialMoon);
 
+
+
 //atmo moon
 const atmoGeometryMoon = new THREE.SphereGeometry(0.3, 30, 30)
 const atmoMaterialMoon = new THREE.ShaderMaterial({
@@ -68,10 +71,7 @@ const atmosphereMoon = new THREE.Mesh(atmoGeometryMoon, atmoMaterialMoon)
 atmosphereMoon.scale.set(1.2, 1.2, 1.2)
 scene.add(atmosphereMoon)
 
-//giving the names for raycaster
-moon.name = 'moon'
-earth.name = 'earth'
-
+//atmo moon
 const group = new THREE.Group()
 const moonGroup = new THREE.Group()
 moonGroup.position.x = 10
@@ -80,13 +80,10 @@ moonGroup.add(atmosphereMoon)
 group.add(earth)
 group.add(moonGroup)
 scene.add(group)
+scene.add(stars)
 camera.position.z = 100;
 
 const clock = new THREE.Clock()
-
-let isResized = false;
-let isFollowingMoon = false; // Track whether the camera is following the moon
-
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
@@ -96,6 +93,7 @@ function animate() {
   const moonOrbitRadius = 8;
   const moonOrbitSpeed = 0.3;
   const moonPosition = new THREE.Vector3();
+
   //for satellite
   // moonPosition.x = Math.cos(moonOrbitSpeed * Date.now() * 0.1) * moonOrbitRadius/2;
   // moonPosition.z = Math.sin(moonOrbitSpeed * Date.now() * 0.1) * moonOrbitRadius;
@@ -103,18 +101,11 @@ function animate() {
   moonPosition.x = Math.cos(moonOrbitSpeed * elapsedTime) * moonOrbitRadius;
   moonPosition.z = Math.sin(moonOrbitSpeed * elapsedTime) * moonOrbitRadius;
   moonGroup.position.copy(moonPosition);
-
   moonGroup.rotation.y += 0.1;
-
-
-  if (isFollowingMoon) {
-    moonPosition.x = Math.cos(moonOrbitSpeed * elapsedTime) * moonOrbitRadius;
-    moonPosition.z = Math.sin(moonOrbitSpeed * elapsedTime) * moonOrbitRadius;
-    camera.position.copy(moonPosition);
-    camera.lookAt(earth.position); // Look at the Earth
-  }
+  // moon.lookAt(earth.position);
 }
 animate();
+
 
 const mouse = {
   x: 0,
@@ -135,19 +126,8 @@ window.addEventListener('resize', function () {
   camera.updateProjectionMatrix();
 });
 
-
-
+let isResized = false
 function onCanvasClick(event) {
-  const resizePerspective = () => {
-    camera.position.set(0, 0, 15)
-    if (isResized === false) {
-      gsap.to(camera.position, { z: 15, y: 0, x: 0, duration: 1 });
-    } else {
-      gsap.to(camera.position, { z: 100, y: 0, x: 0, duration: 1 });
-    }
-    isResized = !isResized;
-  }
-
   // Calculate the mouse position in normalized device coordinates
   const mouse = new THREE.Vector2();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -161,23 +141,26 @@ function onCanvasClick(event) {
   raycaster.setFromCamera(mouse, camera);
 
   // Perform the intersection check and populate the 'intersects' array
-  raycaster.intersectObject(group, true, intersects);
+  raycaster.intersectObject(earth, true, intersects);
 
   // If there are intersections
   if (intersects.length > 0) {
+
     const clickedMesh = intersects[0].object;
 
-    if (clickedMesh.name === 'moon') {
-      // Switch to moon perspective
-      isFollowingMoon = true;
-    } else if (clickedMesh.name === 'earth') {
-      isFollowingMoon = false
-      resizePerspective();
+    // Example: Change the color of the clicked mesh
+    console.log(clickedMesh, 'clickedMesh')
+    console.log(mouse, 'mouse')
+
+    if (isResized === false) {
+      gsap.to(camera.position, { z: 15, duration: 1 })
+    } else {
+      gsap.to(camera.position, { z: 100, duration: 1 })
     }
+    isResized = !isResized
+
   }
 }
-
-
 
 // Assuming 'renderer' is your Three.js renderer
 renderer.domElement.addEventListener('click', onCanvasClick); 
